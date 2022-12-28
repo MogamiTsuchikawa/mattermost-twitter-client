@@ -69,6 +69,31 @@ const postTwitter = (text: string, sendResponse: (response?: any) => void) => {
   })();
 };
 
+const checkAuth = (sendResponse: (response?: any) => void) => {
+  (async () => {
+    const token = await storage.local.get("twitterToken");
+    console.log(token);
+    try {
+      const res = await fetch(
+        "https://api.twitter.com/2/tweets/1608189165400920064",
+        {
+          method: "GET",
+          mode: "cors",
+          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token.twitterToken}`,
+            "Content-type": "application/json",
+          },
+        }
+      );
+      if (res.status === 200) sendResponse("ok");
+      else sendResponse("fail");
+    } catch (e: any) {
+      sendResponse("fail");
+    }
+  })();
+};
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.kind) {
     case "authTwitter":
@@ -76,6 +101,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
     case "postTwitter":
       postTwitter(message.text, sendResponse);
+      break;
+    case "checkAuth":
+      checkAuth(sendResponse);
       break;
   }
   return true;

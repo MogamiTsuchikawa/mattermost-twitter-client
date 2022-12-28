@@ -17,7 +17,12 @@
     "url": "https://github.com/chibat/chrome-extension-typescript-starter.git"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@extend-chrome/storage": "^1.5.0",
+    "@mui/icons-material": "^5.11.0",
+    "@mui/lab": "^5.0.0-alpha.114",
+    "@mui/material": "^5.11.2",
     "@types/axios": "^0.14.0",
     "axios": "^1.2.1",
     "react": "^17.0.1",
