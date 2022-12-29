@@ -3,14 +3,12 @@ import ReactDOM from "react-dom";
 import { storage } from "@extend-chrome/storage";
 
 const Options = () => {
-  const [mattermostWebhook, setMattermostWebhook] = useState("");
-  const [mattermostUsername, setMattermostUsername] = useState("");
+  const [mattermostToken, setMattermostToken] = useState("");
   useEffect(() => {
     (async () => {
       const local = await storage.local.get();
-      if (local.mattermostHook && local.mattermostUsername) {
-        setMattermostUsername(local.mattermostUsername);
-        setMattermostWebhook(local.mattermostHook);
+      if (local.mattermostToken) {
+        setMattermostToken(local.mattermostToken);
       }
     })();
   }, []);
@@ -19,27 +17,18 @@ const Options = () => {
       const local = storage.local.get();
       storage.local.set({
         ...local,
-        mattermostHook: mattermostWebhook,
-        mattermostUsername: mattermostUsername,
+        mattermostToken,
       });
     })();
   };
   return (
     <>
-      <p>WebhoolURL</p>
+      <p>MattermostPersonalAccessToken</p>
       <input
         type="text"
-        value={mattermostWebhook}
+        value={mattermostToken}
         onChange={(e) => {
-          setMattermostWebhook(e.target.value);
-        }}
-      />
-      <p>投稿者名</p>
-      <input
-        type="text"
-        value={mattermostUsername}
-        onChange={(e) => {
-          setMattermostUsername(e.target.value);
+          setMattermostToken(e.target.value);
         }}
       />
       <button onClick={onClick}>更新</button>
