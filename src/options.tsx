@@ -5,12 +5,14 @@ import { storage } from "@extend-chrome/storage";
 const Options = () => {
   const [mattermostToken, setMattermostToken] = useState("");
   const [mattermostDomain, setMattermostDomain] = useState("");
+  const [mattermostChannel, setMattermostChannel] = useState("");
   useEffect(() => {
     (async () => {
       const local = await storage.local.get();
       if (local.mattermostToken) {
         setMattermostToken(local.mattermostToken);
         setMattermostDomain(local.mattermostDomain);
+        setMattermostChannel(local.mattermostChannel);
       }
     })();
   }, []);
@@ -21,6 +23,7 @@ const Options = () => {
         ...local,
         mattermostToken,
         mattermostDomain,
+        mattermostChannel,
       });
     })();
   };
@@ -32,6 +35,14 @@ const Options = () => {
         value={mattermostDomain}
         onChange={(e) => {
           setMattermostDomain(e.target.value);
+        }}
+      />
+      <p>Mattermost対象チャンネルID（チャンネル名・URLとの混同注意）</p>
+      <input
+        type="text"
+        value={mattermostChannel}
+        onChange={(e) => {
+          setMattermostChannel(e.target.value);
         }}
       />
       <p>MattermostPersonalAccessToken</p>
