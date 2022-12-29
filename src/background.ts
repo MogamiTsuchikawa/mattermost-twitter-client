@@ -93,6 +93,35 @@ const checkAuth = (sendResponse: (response?: any) => void) => {
     }
   })();
 };
+const postMattermost = (
+  text: string,
+  sendResponse: (response?: any) => void
+) => {
+  (async () => {
+    const local = await storage.local.get();
+    if (!local.mattermostHook) {
+      sendResponse("WebhookURLが設定されていません");
+      return;
+    }
+    try {
+      const res = await fetch(local.mattermostHook, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          text: text,
+          username: local.mattermostUsername,
+        }),
+      });
+      sendResponse("done");
+    } catch (e: any) {
+      console.log(e);
+      sendResponse("fail");
+    }
+  })();
+};
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   switch (message.kind) {
@@ -104,6 +133,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
     case "checkAuth":
       checkAuth(sendResponse);
+      break;
+    case "postMattermost":
+      postMattermost(message.text, sendResponse);
       break;
   }
   return true;

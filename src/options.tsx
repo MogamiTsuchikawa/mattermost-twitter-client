@@ -1,69 +1,48 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { storage } from "@extend-chrome/storage";
 
 const Options = () => {
-  const [color, setColor] = useState<string>("");
-  const [status, setStatus] = useState<string>("");
-  const [like, setLike] = useState<boolean>(false);
-
+  const [mattermostWebhook, setMattermostWebhook] = useState("");
+  const [mattermostUsername, setMattermostUsername] = useState("");
   useEffect(() => {
-    // Restores select box and checkbox state using the preferences
-    // stored in chrome.storage.
-    chrome.storage.sync.get(
-      {
-        favoriteColor: "red",
-        likesColor: true,
-      },
-      (items) => {
-        setColor(items.favoriteColor);
-        setLike(items.likesColor);
+    (async () => {
+      const local = await storage.local.get();
+      if (local.mattermostHook && local.mattermostUsername) {
+        setMattermostUsername(local.mattermostUsername);
+        setMattermostWebhook(local.mattermostHook);
       }
-    );
+    })();
   }, []);
-
-  const saveOptions = () => {
-    // Saves options to chrome.storage.sync.
-    chrome.storage.sync.set(
-      {
-        favoriteColor: color,
-        likesColor: like,
-      },
-      () => {
-        // Update status to let user know options were saved.
-        setStatus("Options saved.");
-        const id = setTimeout(() => {
-          setStatus("");
-        }, 1000);
-        return () => clearTimeout(id);
-      }
-    );
+  const onClick = () => {
+    (async () => {
+      const local = storage.local.get();
+      storage.local.set({
+        ...local,
+        mattermostHook: mattermostWebhook,
+        mattermostUsername: mattermostUsername,
+      });
+    })();
   };
-
   return (
     <>
-      <div>
-        Favorite color: <select
-          value={color}
-          onChange={(event) => setColor(event.target.value)}
-        >
-          <option value="red">red</option>
-          <option value="green">green</option>
-          <option value="blue">blue</option>
-          <option value="yellow">yellow</option>
-        </select>
-      </div>
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={like}
-            onChange={(event) => setLike(event.target.checked)}
-          />
-          I like colors.
-        </label>
-      </div>
-      <div>{status}</div>
-      <button onClick={saveOptions}>Save</button>
+      <p>WebhoolURL</p>
+      <input
+        type="text"
+        value={mattermostWebhook}
+        onChange={(e) => {
+          setMattermostWebhook(e.target.value);
+        }}
+      />
+      <p>投稿者名</p>
+      <input
+        type="text"
+        value={mattermostUsername}
+        onChange={(e) => {
+          setMattermostUsername(e.target.value);
+        }}
+      />
+      <button onClick={onClick}>更新</button>
     </>
   );
 };
