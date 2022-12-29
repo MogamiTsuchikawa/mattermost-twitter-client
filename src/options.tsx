@@ -4,11 +4,13 @@ import { storage } from "@extend-chrome/storage";
 
 const Options = () => {
   const [mattermostToken, setMattermostToken] = useState("");
+  const [mattermostDomain, setMattermostDomain] = useState("");
   useEffect(() => {
     (async () => {
       const local = await storage.local.get();
       if (local.mattermostToken) {
         setMattermostToken(local.mattermostToken);
+        setMattermostDomain(local.mattermostDomain);
       }
     })();
   }, []);
@@ -18,11 +20,20 @@ const Options = () => {
       storage.local.set({
         ...local,
         mattermostToken,
+        mattermostDomain,
       });
     })();
   };
   return (
     <>
+      <p>対象Mattermostドメイン</p>
+      <input
+        type="text"
+        value={mattermostDomain}
+        onChange={(e) => {
+          setMattermostDomain(e.target.value);
+        }}
+      />
       <p>MattermostPersonalAccessToken</p>
       <input
         type="text"
