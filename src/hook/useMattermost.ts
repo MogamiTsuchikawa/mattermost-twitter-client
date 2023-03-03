@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { storage } from "@extend-chrome/storage";
 
 export const useMattermost = () => {
-  const [hookUrl, setHookUrl] = useState<string | undefined>();
+  const [token, setToken] = useState<string | undefined>();
   const [posting, setPosting] = useState(false);
   useEffect(() => {
     (async () => {
       const local = await storage.local.get();
-      if (local.mattermostHook) {
-        setHookUrl(local.mattermostHook);
+      if (local.mattermostToken) {
+        setToken(local.mattermostToken);
       }
     })();
   }, []);
@@ -28,7 +28,7 @@ export const useMattermost = () => {
     });
   };
   return {
-    hookUrl,
+    token,
     postMattermost,
     posting,
   };

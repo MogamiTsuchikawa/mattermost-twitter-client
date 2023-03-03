@@ -9,20 +9,19 @@ const PostEditor = () => {
   const [text, setText] = useState("");
   const twitter = useTweetTwitter();
   const [postDone, setPostDone] = useState(false);
+  const [isSyncPostMode, setIsSysncPostMode] = useState(true);
   const mattermost = useMattermost();
   const onClickPost = () => {
-    twitter
-      .postTweet(text)
-      .then(() => {
-        mattermost
-          .postMattermost(text)
-          .then(() => {
-            setText("");
-            setPostDone(true);
-          })
-          .catch((e) => {});
-      })
-      .catch((e) => {});
+    (async () => {
+      try {
+        await mattermost.postMattermost(text);
+        if (isSyncPostMode) await twitter.postTweet(text);
+        setText("");
+        setPostDone(true);
+      } catch (e) {
+        console.log(e);
+      }
+    })();
   };
   return (
     <>
@@ -38,8 +37,15 @@ const PostEditor = () => {
         rows={4}
         value={text}
       />
-      {mattermost.hookUrl ? (
-        <input type="checkbox" name="Mattermost同時投稿" id="" />
+      {mattermost.token ? (
+        <input
+          type="checkbox"
+          name="Twitter同時投稿"
+          checked={isSyncPostMode}
+          onChange={(e) => {
+            setIsSysncPostMode(e.target.checked);
+          }}
+        />
       ) : (
         <></>
       )}

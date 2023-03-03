@@ -99,22 +99,30 @@ const postMattermost = (
 ) => {
   (async () => {
     const local = await storage.local.get();
-    if (!local.mattermostHook) {
-      sendResponse("WebhookURLが設定されていません");
+    if (!local.mattermostDomain) {
+      sendResponse("Mattermostのドメインが設定されていません");
+      return;
+    }
+    if (!local.mattermostToken) {
+      sendResponse("MattermostのPersonalAccessTokenが設定されていません");
       return;
     }
     try {
-      const res = await fetch(local.mattermostHook, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          text: text,
-          username: local.mattermostUsername,
-        }),
-      });
+      const res = await fetch(
+        `https://${local.mattermostDomain}/api/v4/posts`,
+        {
+          method: "POST",
+          mode: "cors",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${local.mattermostToken}`,
+          },
+          body: JSON.stringify({
+            text: text,
+            channel_id: local.mattermostChannel,
+          }),
+        }
+      );
       sendResponse("done");
     } catch (e: any) {
       console.log(e);
